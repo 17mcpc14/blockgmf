@@ -1,46 +1,45 @@
 # Block GPU Matrix Factorization
 
-Matrix  factorization  is  well  known  technique  for  variousmachine  learning  problems  ranging  from  recommender  sys-tems to text mining. The simplicity of the technique is basedon deriving underlying latent factors leading to a behavior byutilization of large data of observed behaviors
+Matrix  factorization  is  well  known  technique  for  various machine  learning  problems  ranging  from  recommender  systems to text mining. The simplicity of the technique is based on deriving underlying latent factors leading to a behavior by utilization of large data of observed behaviors.
 
-The  number  of  computations  for  matrix  factorization  of  adata  matrix X∈R{n×m} into  latent  feature  matrices U∈R{n×k},V∈R{k×m}can be arrived as:≈(n×m×k×a+n×m×b)×Nfor some constants a and b, whileNnumber of iterations.Hence the time complexity≈O(n4)As  n,  m→ ∞,Nandkremain  constants,  the  cost  ofcomputation≈n×mand the time complexity≈O(n2).Asn,m→106, the number of computations≈1012
+The  number  of  computations  for  matrix  factorization  of  adata  matrix X∈R{n×m} into  latent  feature  matrices U∈R{n×k},V∈R{k×m} is:≈(n×m×k×a + n×m×b)×N for some constants a and b, while N being number of iterations. Hence, the time complexity ≈O(n^4). As  n,  m → ∞, N and k remain  constants,  the  cost  of computation ≈n×m and the time complexity ≈O(n2). Asn,m →1^6, the number of computations≈10^12
 
-Matrix  Factorization  on  a  GPU  gives  substantial  perfor-mance gain as the number of computations are nearly dividedby number of GPU cores leveraged. However, the amount ofmemory  available  on  a  typical  GPU  is  limited  and  for  largedatasets it may not be possible to compute matrix factorizationat once with all data transferred into GPU cache.
+Matrix  Factorization  on  a  GPU  gives  substantial  performance gain as the number of computations are nearly dividedby number of GPU cores leveraged. However, the amount of memory  available  on  a  typical  GPU  is  limited  and  for  large datasets it may not be possible to compute dense matrix factorization in one go with all data transferred into GPU cache. The memory required for a data matriX can be arrived as ≈(n×m + n×k + k×m)×c for some constant c bytes taken to represent each element. Hence the space complexity ≈O(n^2). Considering k as constant, and as n,m → 10^6, the numberof memory units required ≈10^12
 
-Consideringkas constant, and asn,m→10^6, the numberof memory units required≈10^12
+The Block GPU matrix factorization considers the data matrix as a block matrix and factorization of each block is achieved on GPU. 
 
-Introduced    below    is    a    novel    approach    that    considersany  given  matrix  into  a  block  matrix  with  each  sub  matrixindependently    converged    within    a    GPU,    the    resultantlatent  feature  sub-matrices  reused  for  factorization  of  otherrelevant  sub-matrices  and  the  overall  process  is  repeated  tillconvergence equivalent to regular matrix factorization.
+![alt text](https://github.com/17mcpc14/blockmf/misc/blockmf.png)
+
+The approach is shown in the above figure considers  each  block  as  an  individual  matrix for  factorization. The algorithm factorizes each block for few  iterations  and  the  latent  features  of  each  of  the blocks are taken as  a  starting  point  for  computation  of  latent  features for  relevant  blocks  afterwards.  
+![alt text](https://github.com/17mcpc14/blockmf/misc/example.png)
+
+Above figure demonstrates a simple example with 4 blocks each factorized individually and then combined together to form U,V.
+
+
 ## Getting Started
 
 
 ### Prerequisites
 
+```
 Python 3.0
 CUDA v8.0
 pyCUDA v1.8
-```
+
 The GPU based Block matrix factorization has been developed using python using pyCUDA support.
 
 ```
 
 ### Installing
 
+
+```
 git clone 'https://github.com/17mcpc14/blockgmf'
 
 ```
-Give the example
-```
-
-And repeat
-
-```
-until finished
-```
-
-End with an example of getting some data out of the system or using it for a little demo
 
 ## Running the tests
 
-Explain how to run the automated tests for this system
 
 ### Break down into end to end tests
 
