@@ -2,7 +2,7 @@
 
 Matrix  factorization  is  well  known  technique  for  various machine  learning  problems  ranging  from  recommender  systems to text mining. The simplicity of the technique is based on deriving underlying latent factors leading to a behavior by utilization of large data of observed behaviors.
 
-The  number  of  computations  for  matrix  factorization  of  adata  matrix X∈R{n×m} into  latent  feature  matrices U∈R{n×k},V∈R{k×m} is:≈(n×m×k×a + n×m×b)×N for some constants a and b, while N being number of iterations. Hence, the time complexity ≈O(n^4). As  n,  m → ∞, N and k remain  constants,  the  cost  of computation ≈n×m and the time complexity ≈O(n2). Asn,m →1^6, the number of computations≈10^12
+The  number  of  computations  for  matrix  factorization  of  adata  matrix X∈R{n×m} into  latent  feature  matrices U∈R{n×k},V∈R{k×m} is:≈(n^2xm^2xa + n×m×k×b + n×m×c)×N for some constants a,b and c, while N being number of iterations. Hence, the time complexity ≈O(n^4). As  n,  m → ∞, N and k remain  constants,  the  cost  of computation ≈n^2×m^2 and the time complexity ≈O(n^4). As n,m →10^6, the number of computations ≈10^24
 
 Matrix  Factorization  on  a  GPU  gives  substantial  performance gain as the number of computations are nearly dividedby number of GPU cores leveraged. However, the amount of memory  available  on  a  typical  GPU  is  limited  and  for  large datasets it may not be possible to compute dense matrix factorization in one go with all data transferred into GPU cache. The memory required for a data matriX can be arrived as ≈(n×m + n×k + k×m)×c for some constant c bytes taken to represent each element. Hence the space complexity ≈O(n^2). Considering k as constant, and as n,m → 10^6, the numberof memory units required ≈10^12
 
