@@ -9,11 +9,7 @@ The Block GPU matrix factorization considers the data matrix as a block matrix a
 <img src="misc/example.png" width="350" title="Example of BMF">
 
 
-The approach is shown in the above figure considers  each  block  as  an  individual  matrix for  factorization. The algorithm factorizes each block for few  iterations  and  the  latent  features  of  each  of  the blocks are taken as  a  starting  point  for  computation  of  latent  features for  relevant  blocks  afterwards.  
-![alt text](https://github.com/17mcpc14/blockmf/misc/example.png)
-
-Above figure demonstrates a simple example with 4 blocks each factorized individually and then combined together to form U,V.
-
+Above figure demonstrates a simple example with 4 blocks each factorized individually and then combined together to form U,V. The approach is shown in the above figure considers  each  block  as  an  individual  matrix for  factorization. The algorithm factorizes each block for few  iterations  and  the  latent  features  of  each  of  the blocks are taken as  a  starting  point  for  computation  of  latent  features for  relevant  blocks  afterwards.  
 
 ## Getting Started
 
