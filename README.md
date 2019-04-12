@@ -49,10 +49,6 @@ Below MF implmentations are hardcoded to run on data/R.txt - a randomly generate
 
 * **Prasad Bhavana** - *Initial work* 
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
-
 ## Acknowledgments
 
 * Vineet C Padmanabhan, Professor, University of Hyderabad
