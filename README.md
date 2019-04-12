@@ -6,7 +6,9 @@ Matrix  Factorization  on  a  GPU  gives  substantial  performance gain as the n
 
 The Block GPU matrix factorization considers the data matrix as a block matrix and factorization of each block is achieved on GPU. 
 
-![alt text](https://github.com/17mcpc14/blockmf/misc/blockmf.png)
+[Screenshot](misc/example.png)
+
+https://github.com/17mcpc14/blockmf/misc/blockmf.png
 
 The approach is shown in the above figure considers  each  block  as  an  individual  matrix for  factorization. The algorithm factorizes each block for few  iterations  and  the  latent  features  of  each  of  the blocks are taken as  a  starting  point  for  computation  of  latent  features for  relevant  blocks  afterwards.  
 ![alt text](https://github.com/17mcpc14/blockmf/misc/example.png)
