@@ -35,46 +35,19 @@ git clone 'https://github.com/17mcpc14/blockgmf'
 
 ## Running the tests
 
-
-### Break down into end to end tests
-
-Explain what these tests test and why
+Below MF implmentations are hardcoded to run on data/R.txt - a randomly generated dataset of 1000x1000 dimension with values ranging from 0 - 30. 
 
 ```
-Give an example
+1. src/cpumf.py - CPU based MF implementation with SGD convergence
+2. src/blockcpumf.py - CPU based BMF implementation with SGD converegence
+3. src/blockparallelcpumf.py - CPU based BMF with parallel/multi-threaded implementation with SGD convergence
 ```
 
-### And coding style tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-## Deployment
-
-Add additional notes about how to deploy this on a live system
-
-## Built With
-
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
-
-## Contributing
-
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
-
-## Versioning
-
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
+**Note:** the programs can be simply modified from R.txt to any other dataset. 
 
 ## Authors
 
-* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
-
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+* **17MCPC14** - *Initial work* 
 
 ## License
 
@@ -82,6 +55,4 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 
 ## Acknowledgments
 
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc
+* Vineet C Padmanabhan
