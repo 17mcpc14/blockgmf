@@ -19,58 +19,6 @@ kernel_code = """
 #include <cuda.h>
 #include <cuda_runtime.h>
 
-__shared__ float all_error;
-
-__device__ void MatrixMul(int *u, int *v, int *r, float *p, float *q, float * eij, float * ex, int * ey, int L1, int L2, int N1, int N2, int ul, int vl, int l, int m, int n, int idx)
-{
-      int rx = 0;
-      ex[idx] = 0.0;
-      ey[idx] = 0;
-      float exidx = ex[idx];
-      int eyidx = ey[idx];
-      for (int i=L1; i < L2; i++)
-      {
-            while(u[rx]<i && rx <ul)
-            {
-                  rx++;
-            }
-                    
-            for(int j=N1; j<N2; j++)
-            {
-                  while(v[rx]<j&& rx <vl)
-                  {
-                        rx++;
-                  }
-                        
-                  float Pvalue = 0;
-               
-                  for (int k = 0; k < m; k++) {
-                        float Aelement = p[i*m +k];
-        	        float Belement = q[ j +k*n];
-              	        Pvalue += Aelement * Belement;
-                  }
-                  
-                  int rating = 0;
-                  if(u[rx]==i && v[rx]==j)
-                  {
-                        rating = r[rx];
-                  }   
-                  if(isfinite(rating - Pvalue)){  
-                    eij[i*n+j] = rating - Pvalue;
-                  }
-                  if(rating>0){
-                       Pvalue = abs(round(Pvalue)-rating);
-                       float temp = (ey[idx]+1);
-                       atomicAdd(&ex[idx], Pvalue*(Pvalue/temp) - ex[idx]/temp);
-                       atomicAdd(&ey[idx], 1);
-                  }
-            }
-      }
-      float z1 = (1.0*ey[idx])/(1.0*ul);
-      float temp = abs(ex[idx]*z1 - exidx*z1);
-      all_error += temp;
-}
-
 __global__ void MatrixFactorization(int *u, int *v, int *r, float *p, float *q, float *ex, int * ey,float * eij, int l, int m, int n,int ul, int vl, int steps, float alpha, float beta, float delta)
 {
    int tx = threadIdx.x + blockDim.x * blockIdx.x;
@@ -105,62 +53,37 @@ __global__ void MatrixFactorization(int *u, int *v, int *r, float *p, float *q, 
    
    for(int s=0; s<steps; s++)
    {
-       MatrixMul( u, v, r, p, q, eij, ex, ey, L1, L2, N1, N2, ul, vl, l , m , n, tx*blockDim.x*gridDim.x +ty);
-
-       //if ( (delta*delta) > all_error)
-       {
-           //printf(" delta %f error %f ", delta*delta, all_error);
-       }
 
        for (int i=L1; i < L2; i++)
        {
 	       for(int j=N1; j<N2; j++)
 	       {
+		    float predict = 0.0;
+               
+                    for (int k = 0; k < m; k++) {
+                        float Aelement = p[i*m +k];
+        	        float Belement = q[ j +k*n];
+              	        predict += Aelement * Belement;
+                    }
+
+                    float eij = r[i*n+j] - predict;
+		    
 		    for(int k=0; k<m; k++)
 		    {
-                        if(isfinite(p[i*m +k] + alpha * (2 * eij[i*n+j] * q[j +k*n] - beta * p[i*m +k])))
+                        if(isfinite(p[i*m +k] + alpha * (2 * eij * q[j +k*n] - beta * p[i*m +k])))
                         {
-			    atomicAdd(&p[i*m +k] ,  alpha * (2 * eij[i*n+j] * q[j +k*n] - beta * p[i*m +k]));
+			    atomicAdd(&p[i*m +k] ,  alpha * (2 * eij * q[j +k*n] - beta * p[i*m +k]));
                         }
-                        if(isfinite(q[j +k*n] + alpha * (2 * eij[i*n+j] * p[i*m +k] - beta * q[j +k*n])))
+                        if(isfinite(q[j +k*n] + alpha * (2 * eij * p[i*m +k] - beta * q[j +k*n])))
                         {
-			    atomicAdd(&q[j +k*n], alpha * (2 * eij[i*n+j] * p[i*m +k] - beta * q[j +k*n]));
+			    atomicAdd(&q[j +k*n], alpha * (2 * eij * p[i*m +k] - beta * q[j +k*n]));
                         }
 		    }
 	       }
        }
-        
-      //MatrixMul( u, v, r, p, q, eij, L1, L2, N1, N2, ul, vl, l , m , n);
       
-      //float e = 0;
-      //for (int i=L1; i < L2; i++)
-      //{
-      //     for(int j=N1; j<N2; j++)
-      //     {       
-                //if (eij[i*n+j] > 0) // non-negative mf
-        //        {
-          //           e = e + eij[i*n+j] * eij[i*n+j];
-                
-	//	     for(int k=0; k<m; k++)
-	//	     {
-	//	       e = e + (beta/2) * ( p[i*m +k] * p[i*m +k]) + (q[j +k*n]*q[j +k*n]);
-	//	     }
-	//	}
-          // }
-      //}
-   
-      //exy[tx*ty] = e;
- 
-      //if (e < elimit)
-      //{
-      //	  s = steps;
-      // }      
-   
    } // steps
 
-   
-   //printf(" Final delta %f error %f \\n ", delta*delta, all_error);
-   
 }    
 """
 
