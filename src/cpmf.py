@@ -1,7 +1,7 @@
 import numpy as np
 import time
 import math
-from util import fetch
+from util import fetch, initUV
 import threading
 from error import rmse
 
@@ -30,7 +30,7 @@ def block_factorization(P, Q, R, u1, u2, v1, v2, steps, K=30, alpha=0.0001, beta
     
 def factorize(users, movies, ratings, test_users, test_movies, test_ratings, blocks=1, latent=30, steps=10, block_steps=2, alpha=0.00001, beta=0.01, delta=0.01, rmse_repeat_count=3, debug=2, dataset=''):
 
-    U, V = np.ones((np.max(users), latent))*0.1, np.ones((latent, np.max(movies)))*0.1
+    U, V = initUV(np.max(users), latent, np.max(movies))
     R = csr_matrix((ratings, (users, movies))).todense()
     
     size = max(np.max(users)+1, np.max(movies)+1)
@@ -43,8 +43,7 @@ def factorize(users, movies, ratings, test_users, test_movies, test_ratings, blo
 
     start_time=time.clock()
     y1, y2 = [], []
-    count = 0
-    flag1 = rmse(test_users, test_movies, test_ratings, U, V) 
+    count, error = 0, 100
     
     for k in range(steps):
 
@@ -125,20 +124,19 @@ def factorize(users, movies, ratings, test_users, test_movies, test_ratings, blo
         print("Step error :", round(test_rmse,3) )
         y2.append(round(test_rmse,3) )
 
-        flag=round(test_rmse,4)
-        gpu_steps = int(gpu_steps*flag/flag1)
+        step_error=round(test_rmse,4)
+        
+        if step_error < delta:
+            break
+        elif error<step_error :
+            break
+        elif rmse_repeat_count<count:
+            break
+        elif eror==step_error:
+            count=count+1
+        else:
+            count = 0
+        error=step_error
 
-        #if flag < delta:
-        #    break
-        #elif flag1<flag :
-        #    break
-        #elif rmse_repeat_count<count:
-        #    break
-        #elif flag==flag1:
-        #    count=count+1
-        #else:
-        #    count = 0
-        #flag1=flag
-
-    np.savetxt(str(blocks*blocks)+'blocks_'+str(gpu_steps)+'iterations_y2.txt', y2, fmt='%.3f')
-    np.savetxt(str(blocks*blocks)+'blocks_'+str(gpu_steps)+'iterations_y1.txt', y1, fmt='%.3f')    
+    np.savetxt(str(blocks*blocks)+'blocks_y2.txt', y2, fmt='%.3f')
+    np.savetxt(str(blocks*blocks)+'blocks_y1.txt', y1, fmt='%.3f')    
