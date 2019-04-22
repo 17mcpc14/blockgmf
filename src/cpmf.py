@@ -132,7 +132,7 @@ def factorize(users, movies, ratings, test_users, test_movies, test_ratings, blo
             break
         elif rmse_repeat_count<count:
             break
-        elif eror==step_error:
+        elif error==step_error:
             count=count+1
         else:
             count = 0
