@@ -1,7 +1,7 @@
 import numpy as np
 import time
 import math
-from error import err
+from error import rmse
 
 def matrix_factorization(users, movies, ratings, test_users, test_movies, test_ratings, K=10, steps=10, alpha=0.0002, beta=0.01, delta=0.01):
 
@@ -32,6 +32,6 @@ def matrix_factorization(users, movies, ratings, test_users, test_movies, test_r
         #        for k in range(K):
         #            e = e + (beta/2) * ( pow(P[i,k],2) + pow(Q[j,k],2) )
 
-        print("Time till now :", round(time.clock()-t0,2), "Train error", err(users, movies, ratings, P,Q), "Test error", err(test_users, test_movies, test_ratings, P,Q) )
+        print("Time till now :", round(time.clock()-t0,2), "Train error", rmse(users, movies, ratings, P,Q), "Test error", rmse(test_users, test_movies, test_ratings, P,Q) )
 
     return P, Q
