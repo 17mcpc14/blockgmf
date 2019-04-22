@@ -13,6 +13,7 @@ matrixfact = mod.get_function("MatrixFactorization")
 def factorize(users, movies, ratings, test_users, test_movies, test_ratings, blocks=1, latent=30, steps=10, gpu_steps=2, alpha=0.000001, beta=0.01, delta=0.01, rmse_repeat_count=5, debug=1, dataset=''):
 
     U, V = initUV(int(np.max(users)+1), latent, int(np.max(movies))+1)
+    V = V.T
     size = max(np.max(users), np.max(movies))
     split = int(size/blocks)
     us = int(math.ceil( np.float(np.max(users))/split ) )
@@ -49,9 +50,10 @@ def factorize(users, movies, ratings, test_users, test_movies, test_ratings, blo
                     v1 = int(np.max(movies))
 
                 v2 = (j+1)*split -1
-                np.max(movies) < v2:
+                if np.max(movies) < v2:
                     v2 = int(np.max(movies))
-               if debug>1:
+                
+                if debug>1:
                     print("Processing split : " , i , j, u1, u2, v1, v2)
 
                 uu, mm, rr = fetch(u1, u2, v1, v2, users, movies, ratings)
