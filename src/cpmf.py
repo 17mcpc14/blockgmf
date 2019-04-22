@@ -30,7 +30,7 @@ def block_factorization(P, Q, R, u1, u2, v1, v2, steps, K=30, alpha=0.0001, beta
     
 def factorize(users, movies, ratings, test_users, test_movies, test_ratings, blocks=1, latent=30, steps=10, gpu_steps=2, alpha=0.00001, beta=0.01, delta=0.01, rmse_repeat_count=3, debug=2, dataset=''):
 
-    U, V = np.ones((np.max(users), latent)), np.ones((latent, np.max(movies)))
+    U, V = np.ones((np.max(users), latent))*0.1, np.ones((latent, np.max(movies)))*0.1
     size = max(np.max(users)+1, np.max(movies)+1)
     split = int(size/blocks)
     us = int(math.ceil( np.float(np.max(users))/split ) )
@@ -42,8 +42,7 @@ def factorize(users, movies, ratings, test_users, test_movies, test_ratings, blo
     start_time=time.clock()
     y1, y2 = [], []
     count = 0
-    R = csr_matrix((ratings, (users, movies))).todense()
-    flag1 = rmse(R, U, V,0, R.shape[1], 0, R.shape[0]) 
+    flag1 = rmse(test_users, test_movies, test_ratings, U, V) 
     
     for k in range(steps):
 
@@ -120,7 +119,7 @@ def factorize(users, movies, ratings, test_users, test_movies, test_ratings, blo
         if debug>1:
             print(" Step time taken : ", round(t5-t4,2))
         y1.append(round(t5-start_time,3))
-        test_rmse = rmse(R, U, V,0, R.shape[1], 0, R.shape[0]) #e(U, V , test_users, test_movies, test_ratings, min(split, max(np.max(test_users), np.max(test_movies))), latent=latent, debug=debug)
+        test_rmse = rmse(test_users, test_movies, test_ratings, U, V)
         print("Step error :", round(test_rmse,3) )
         y2.append(round(test_rmse,3) )
 
