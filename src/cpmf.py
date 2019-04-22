@@ -4,6 +4,7 @@ import math
 from util import fetch, initUV
 import threading
 from error import rmse
+from scipy.sparse import csr_matrix
 
 U,V = None, None
 
@@ -29,7 +30,7 @@ def block_factorization(P, Q, R, u1, u2, v1, v2, steps, K=30, alpha=0.0001, beta
     V[0:K, v1:v2+1] = Q.reshape( (K, v2-v1+1))
     
 def factorize(users, movies, ratings, test_users, test_movies, test_ratings, blocks=1, latent=30, steps=10, block_steps=2, alpha=0.00001, beta=0.01, delta=0.01, rmse_repeat_count=3, debug=2, dataset=''):
-
+    global U, V
     U, V = initUV(np.max(users), latent, np.max(movies))
     R = csr_matrix((ratings, (users, movies))).todense()
     
