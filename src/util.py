@@ -15,7 +15,7 @@ def fetch( u1, u2, v1, v2, users, movies, ratings):
             
     return np.array(u).astype(np.int32), np.array(m).astype(np.int32), np.array(r).astype(np.int32)
 
-def initPQ(L,M,N):
+def initUV(L,M,N):
 
     f = tb.open_file('./matrix-pt.h5', 'w')
 
