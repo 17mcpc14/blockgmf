@@ -28,9 +28,11 @@ def block_factorization(P, Q, R, u1, u2, v1, v2, steps, K=30, alpha=0.0001, beta
     U[u1:u2+1, 0:latent] = P.reshape( (u2-u1+1, latent))
     V[0:latent, v1:v2+1] = Q.reshape( (latent, v2-v1+1))
     
-def factorize(users, movies, ratings, test_users, test_movies, test_ratings, blocks=1, latent=30, steps=10, gpu_steps=2, alpha=0.00001, beta=0.01, delta=0.01, rmse_repeat_count=3, debug=2, dataset=''):
+def factorize(users, movies, ratings, test_users, test_movies, test_ratings, blocks=1, latent=30, steps=10, block_steps=2, alpha=0.00001, beta=0.01, delta=0.01, rmse_repeat_count=3, debug=2, dataset=''):
 
     U, V = np.ones((np.max(users), latent))*0.1, np.ones((latent, np.max(movies)))*0.1
+    R = csr_matrix((ratings, (users, movies))).todense()
+    
     size = max(np.max(users)+1, np.max(movies)+1)
     split = int(size/blocks)
     us = int(math.ceil( np.float(np.max(users))/split ) )
@@ -108,7 +110,7 @@ def factorize(users, movies, ratings, test_users, test_movies, test_ratings, blo
                             print('waiting for the thread ...')
                             time.sleep(5)
                  	
-                    t = threading.Thread(target=block_factorization, args=(P,Q,R, u1, u2, v1, v2, gpu_steps))
+                    t = threading.Thread(target=block_factorization, args=(P,Q,R, u1, u2, v1, v2, block_steps))
                     tpool[j] = t
                     t.start()
                     t8 = time.clock()
