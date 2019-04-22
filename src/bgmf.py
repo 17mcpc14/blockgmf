@@ -5,7 +5,7 @@ from util import fetch, initUV
 from pycuda import driver, compiler, gpuarray, tools
 import pycuda.autoinit
 
-kernel_code = open('bgmfkernel.c', 'r').read()
+kernel_code = open('bgmf_kernel.c', 'r').read()
 mod = compiler.SourceModule(kernel_code)
 matrixfact = mod.get_function("MatrixFactorization")
 
