@@ -6,7 +6,7 @@ from error import rmse
 from pycuda import driver, compiler, gpuarray, tools
 import pycuda.autoinit
 
-kernel_code = open('gpmfkernel.c', 'r').read()
+kernel_code = open('gpmf_kernel.c', 'r').read()
 mod = compiler.SourceModule(kernel_code)
 matrixfact = mod.get_function("MatrixFactorization")
 
