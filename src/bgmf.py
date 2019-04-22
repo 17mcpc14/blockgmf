@@ -1,7 +1,7 @@
 import numpy as np
 import time
 from error import rmse
-from util import fetch
+from util import fetch, initPQ
 from pycuda import driver, compiler, gpuarray, tools
 import pycuda.autoinit
 
@@ -77,7 +77,7 @@ def unpack(U, V, PP, QQ, users, movies, ulimits, plimits, latent):
 
 def factorize(users, movies, ratings, test_users, test_movies, test_ratings, blocks=1, latent=10, steps=10, gpu_steps=2, alpha=0.0002, beta=0.01, delta=0.01, rmse_repeat_count=3, debug=2, dataset=''):
 
-    U, V = np.ones((len(users), latent))*0.1, np.ones((len(movies), latent))*0.1
+    U, V = initPQ( len(users), latent, len(movies) )
     size = max(np.max(users)+1, np.max(movies)+1)
     split = int(size/blocks)
     us = int(math.ceil( np.float(np.max(users))/split ) )
@@ -88,9 +88,8 @@ def factorize(users, movies, ratings, test_users, test_movies, test_ratings, blo
 
     start_time=time.clock()
     y1, y2 = [], []
-    count = 0
-    error = 100 # rmse(users, movies, ratings U, V)
-
+    count, error = 0, 100
+    
     for k in range(steps):
 
         if debug>1:
@@ -149,25 +148,25 @@ def factorize(users, movies, ratings, test_users, test_movies, test_ratings, blo
         if debug>1:
             print(" Step time taken : ", round(t5-t4,2))
 
-        #y1.append(round(t5-start_time,3))
+        y1.append(round(t5-start_time,3))
         train_rmse = rmse(users, movies, ratings, U, V)
         test_rmse = rmse(test_users, test_movies, test_ratings, U, V)
         print("Train error:", round(train_rmse, 3) , " Test error:", round(test_rmse,3) )
-        #y2.append(round(test_rmse,3) )
+        y2.append(round(test_rmse,3) )
 
-        #step_error=round(test_rmse,4)
+        step_error=round(test_rmse,4)
         
-        #if step_error < delta:
-        #    break
-        #elif error<step_error :
-        #    break
-        #elif rmse_repeat_count<count:
-        #    break
-        #elif step_error==error:
-        #    count=count+1
-        #else:
-        #    count = 0
-        #error=step_error
+        if step_error < delta:
+            break
+        elif error<step_error :
+            break
+        elif rmse_repeat_count<count:
+            break
+        elif step_error==error:
+            count=count+1
+        else:
+            count = 0
+        error=step_error
 
-    #np.savetxt(str(blocks*blocks)+'blocks_'+str(gpu_steps)+'iterations_y2.txt', y2, fmt='%.3f')
-    #np.savetxt(str(blocks*blocks)+'blocks_'+str(gpu_steps)+'iterations_y1.txt', y1, fmt='%.3f')
+    np.savetxt(str(blocks*blocks)+'blocks_'+str(gpu_steps)+'iterations_y2.txt', y2, fmt='%.3f')
+    np.savetxt(str(blocks*blocks)+'blocks_'+str(gpu_steps)+'iterations_y1.txt', y1, fmt='%.3f')
