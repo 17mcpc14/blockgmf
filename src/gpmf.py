@@ -1,7 +1,7 @@
 import numpy as np
 import time
 import math
-from util import fetch, initPQ
+from util import fetch, initUV
 from error import rmse
 from pycuda import driver, compiler, gpuarray, tools
 import pycuda.autoinit
@@ -12,7 +12,7 @@ matrixfact = mod.get_function("MatrixFactorization")
 
 def factorize(users, movies, ratings, test_users, test_movies, test_ratings, blocks=1, latent=30, steps=10, gpu_steps=2, alpha=0.000001, beta=0.01, delta=0.01, rmse_repeat_count=5, debug=1, dataset=''):
 
-    U, V = initPQ(int(np.max(users)+1), latent, int(np.max(movies))+1)
+    U, V = initUV(int(np.max(users)+1), latent, int(np.max(movies))+1)
     size = max(np.max(users), np.max(movies))
     split = int(size/blocks)
     us = int(math.ceil( np.float(np.max(users))/split ) )
