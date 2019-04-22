@@ -5,7 +5,7 @@ from util import fetch, initUV
 import threading
 from error import rmse
 
-U,V = [], []
+U,V = None, None
 
 def block_factorization(P, Q, R, u1, u2, v1, v2, steps, K=30, alpha=0.0001, beta=0.01):
     
@@ -25,8 +25,8 @@ def block_factorization(P, Q, R, u1, u2, v1, v2, steps, K=30, alpha=0.0001, beta
                         if(np.isfinite(alpha * (2 * eij * P[i,k] - beta * Q[k,j]))):
                             Q[k,j] = Q[k,j] + alpha * (2 * eij * P[i,k] - beta * Q[k,j])
         
-    U[u1:u2+1, 0:latent] = P.reshape( (u2-u1+1, latent))
-    V[0:latent, v1:v2+1] = Q.reshape( (latent, v2-v1+1))
+    U[u1:u2+1, 0:K] = P.reshape( (u2-u1+1, K))
+    V[0:K, v1:v2+1] = Q.reshape( (K, v2-v1+1))
     
 def factorize(users, movies, ratings, test_users, test_movies, test_ratings, blocks=1, latent=30, steps=10, block_steps=2, alpha=0.00001, beta=0.01, delta=0.01, rmse_repeat_count=3, debug=2, dataset=''):
 
