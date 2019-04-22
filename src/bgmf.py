@@ -128,6 +128,8 @@ def factorize(users, movies, ratings, test_users, test_movies, test_ratings, blo
 
                 v1 = j*split
                 if np.max(movies) < v1:
+                    v1 = int(np.max(movies))
+                    
                 v2 = (j+1)*split -1
                 if np.max(movies) < v2:
                     v2 = int(np.max(movies))
