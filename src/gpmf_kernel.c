@@ -72,11 +72,11 @@ __global__ void MatrixFactorization(int *u, int *v, int *r, float *p, float *q, 
                     { 
                         if(isfinite(p[i*m +k] + alpha * (2* eij * q[j +k*n] - beta * p[i*m +k])))
                         {
-                            atomicAdd(p[i*m +k] , alpha * ( 2 * eij * q[j +k*n] - beta * p[i*m +k]));
+                            atomicAdd(&p[i*m +k] , alpha * ( 2 * eij * q[j +k*n] - beta * p[i*m +k]));
                         }
                         if(isfinite(q[j +k*n] + alpha * (2 * eij * p[i*m +k] - beta * q[j +k*n])))
                         {
-                            atomicAdd(q[j +k*n] , alpha * ( 2 * eij * p[i*m +k] - beta * q[j +k*n]));
+                            atomicAdd(&q[j +k*n] , alpha * ( 2 * eij * p[i*m +k] - beta * q[j +k*n]));
                         }
                     }
                }
