@@ -18,4 +18,4 @@ test_users = test['user_id']
 test_movies = test['movie_id']
 test_ratings = test['rating']
 
-factorize(users, movies, ratings, test_users, test_movies, test_ratings, K=30, blocks=blocks, steps=steps, alpha=0.0002, beta=0.01, delta=0.01)
+factorize(users, movies, ratings, test_users, test_movies, test_ratings, latent=30, blocks=blocks, steps=steps, alpha=0.0002, beta=0.01, delta=0.01)
