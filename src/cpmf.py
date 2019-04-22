@@ -19,19 +19,19 @@ def block_factorization(P, Q, R, u1, u2, v1, v2, steps, K=30, alpha=0.0001, beta
         for i in range(u2-u1+1):
             for j in range(v2-v1+1):
                 if R[i,j] > 0:
-                    eij = R[i,j] - np.dot(P[i,:], Q[:,j])
+                    eij = R[i,j] - np.dot(P[i,:], Q[j, :])
                     for k in range(K):
-                        if(np.isfinite(alpha * (2 * eij * Q[k,j] - beta * P[i,k]))):
-                            P[i,k] = P[i,k] + alpha * (2 * eij * Q[k,j] - beta * P[i,k])
+                        if(np.isfinite(alpha * (2 * eij * Q[j,k] - beta * P[i,k]))):
+                            P[i,k] = P[i,k] + alpha * (2 * eij * Q[j,k] - beta * P[i,k])
                         if(np.isfinite(alpha * (2 * eij * P[i,k] - beta * Q[k,j]))):
-                            Q[k,j] = Q[k,j] + alpha * (2 * eij * P[i,k] - beta * Q[k,j])
+                            Q[j,k] = Q[j,k] + alpha * (2 * eij * P[i,k] - beta * Q[j,k])
         
     U[u1:u2+1, 0:K] = P.reshape( (u2-u1+1, K))
-    V[0:K, v1:v2+1] = Q.reshape( (K, v2-v1+1))
+    V[v1:v2+1, 0:K] = Q.reshape( (v2-v1+1, K))
     
 def factorize(users, movies, ratings, test_users, test_movies, test_ratings, blocks=1, latent=30, steps=10, block_steps=2, alpha=0.00001, beta=0.01, delta=0.01, rmse_repeat_count=3, debug=2, dataset=''):
     global U, V
-    U, V = initUV(np.max(users), latent, np.max(movies))
+    U, V = initUV(np.max(users)+1, latent, np.max(movies)+1)
     R = csr_matrix((ratings, (users, movies))).todense()
     
     size = max(np.max(users)+1, np.max(movies)+1)
@@ -51,7 +51,6 @@ def factorize(users, movies, ratings, test_users, test_movies, test_ratings, blo
         if debug>1:
             print("Step : ", k)
 
-        rmse = 0
         u1, v1 = 0, 0
 
         t4 = time.clock()
@@ -95,7 +94,7 @@ def factorize(users, movies, ratings, test_users, test_movies, test_ratings, blo
                 if debug>1:
                     print("Shapes of uu,mm,rr :", uu.shape, mm.shape, rr.shape)
                 t6 = time.clock()
-                P, Q = U[u1:u2+1, 0:latent], V[0:latent, v1:v2+1]
+                P, Q = U[u1:u2+1, 0:latent], V[v1:v2+1, 0:latent]
                 if debug>1:
                     print("P Q shapes : " , P.shape, Q.shape)
                 t7 = time.clock()
