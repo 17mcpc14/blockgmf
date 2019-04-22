@@ -23,7 +23,7 @@ def block_factorization(P, Q, R, u1, u2, v1, v2, steps, K=30, alpha=0.0001, beta
                     for k in range(K):
                         if(np.isfinite(alpha * (2 * eij * Q[j,k] - beta * P[i,k]))):
                             P[i,k] = P[i,k] + alpha * (2 * eij * Q[j,k] - beta * P[i,k])
-                        if(np.isfinite(alpha * (2 * eij * P[i,k] - beta * Q[k,j]))):
+                        if(np.isfinite(alpha * (2 * eij * P[i,k] - beta * Q[j,k]))):
                             Q[j,k] = Q[j,k] + alpha * (2 * eij * P[i,k] - beta * Q[j,k])
         
     U[u1:u2+1, 0:K] = P.reshape( (u2-u1+1, K))
