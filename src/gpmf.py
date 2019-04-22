@@ -24,7 +24,7 @@ def factorize(users, movies, ratings, test_users, test_movies, test_ratings, blo
     matrixfact = mod.get_function("MatrixFactorization")
     start_time=time.clock()
     y1, y2 = [], []
-    error, count = 0, 0
+    error, count = 100, 0
 
     for k in range(steps):
 
