@@ -1,5 +1,6 @@
 import numpy as np
 import time
+import math
 from error import rmse
 from util import fetch, initUV
 from pycuda import driver, compiler, gpuarray, tools
@@ -95,7 +96,6 @@ def factorize(users, movies, ratings, test_users, test_movies, test_ratings, blo
         if debug>1:
             print("Step : ", k)
 
-        rmse = 0
         u1, v1 = 0, 0
         t4 = time.clock()
 
