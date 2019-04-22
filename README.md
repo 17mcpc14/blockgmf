@@ -35,15 +35,23 @@ git clone 'https://github.com/17mcpc14/blockgmf'
 
 ## Running the tests
 
-Below MF implmentations are hardcoded to run on data/R.txt - a randomly generated dataset of 1000x1000 dimension with values ranging from 0 - 30. 
+The project contains 4 different variants of similar SGD kernel
+```
+1. src/cmf.py - CPU based MF implementation with SGD convergence
+2. src/cpmf.py - Multi-threaded CPU based BMF implementation with SGD converegence
+3. src/gpmf.py - Atomic GPU based MF with parallel implementation with SGD convergence
+4. src/bgmf.py - Block based GPU accelerated MF with SGD convergence
+
+All above programs can be invoked through invocation of respective MF methods (factorize/block_factorization). Alternatively the same can be invoked from respective main programs as below:
+
+1. src/main_cmf.py <ml-100k/train.csv> <ml-100k/test.csv> <2000>
+2. src/cpmf.py <ml-100k/train.csv> <ml-100k/test.csv> <2000> <16>
+3. src/gpmf.py <ml-100k/train.csv> <ml-100k/test.csv> <16> <2000> <1> 
+4. src/bgmf.py <ml-100k/train.csv> <ml-100k/test.csv> <16> <2000> <1>
 
 ```
-1. src/cpumf.py - CPU based MF implementation with SGD convergence
-2. src/blockcpumf.py - CPU based BMF implementation with SGD converegence
-3. src/blockparallelcpumf.py - CPU based BMF with parallel/multi-threaded implementation with SGD convergence
-```
 
-**Note:** the programs can be simply modified from R.txt to any other dataset. 
+**Note:** the programs can be run with R.txt (Rtrain.csv, Rtest.csv> or any other dataset. 
 
 ## Authors
 
