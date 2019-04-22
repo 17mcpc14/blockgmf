@@ -1,6 +1,6 @@
 import numpy as np
 
-def err(users, movies, ratings, P, Q):
+def rmse(users, movies, ratings, P, Q):
 
     e = 0.0
     n = 0
