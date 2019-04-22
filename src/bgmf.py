@@ -1,7 +1,7 @@
 import numpy as np
 import time
 from error import rmse
-from util import fetch, initPQ
+from util import fetch, initUV
 from pycuda import driver, compiler, gpuarray, tools
 import pycuda.autoinit
 
@@ -77,7 +77,7 @@ def unpack(U, V, PP, QQ, users, movies, ulimits, plimits, latent):
 
 def factorize(users, movies, ratings, test_users, test_movies, test_ratings, blocks=1, latent=10, steps=10, gpu_steps=2, alpha=0.0002, beta=0.01, delta=0.01, rmse_repeat_count=3, debug=2, dataset=''):
 
-    U, V = initPQ( len(users), latent, len(movies) )
+    U, V = initUV( len(users), latent, len(movies) )
     size = max(np.max(users)+1, np.max(movies)+1)
     split = int(size/blocks)
     us = int(math.ceil( np.float(np.max(users))/split ) )
