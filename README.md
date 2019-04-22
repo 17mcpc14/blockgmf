@@ -54,7 +54,7 @@ All above programs can be invoked through invocation of respective MF methods (f
 
 ```
 
-**Note:** the programs can be run with R.txt (Rtrain.csv, Rtest.csv> or any other dataset. 
+**Note:** the programs can be run with Rtrain.csv, Rtest.csv uploaded into /data directory of the project or with any other dataset by modifying the main_<algo>.py accordingly. 
 
 ## Authors
 
