@@ -25,9 +25,8 @@ def initUV(L,M,N):
     for i in range(L):
         ad[i,:] = a
 
-    bd = f.create_carray(f.root, 'b', tb.Float64Atom(), (M,N), filters=filters)
-    b = np.ones(N)*0.1
+    bd = f.create_carray(f.root, 'b', tb.Float64Atom(), (N, M), filters=filters)
     for i in range(M):
-        bd[i,:] = b
+        bd[i,:] = a
 
     return ad , bd
