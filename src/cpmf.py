@@ -11,7 +11,7 @@ U,V = None, None
 def block_factorization(P, Q, R, u1, u2, v1, v2, steps, K=30, alpha=0.0001, beta=0.01):
     
     t0 = time.clock()
-    print("Steps ",steps)
+    print("Block steps ",steps)
     if steps<1:
         steps = 1
   
@@ -29,7 +29,7 @@ def block_factorization(P, Q, R, u1, u2, v1, v2, steps, K=30, alpha=0.0001, beta
     U[u1:u2+1, 0:K] = P.reshape( (u2-u1+1, K))
     V[v1:v2+1, 0:K] = Q.reshape( (v2-v1+1, K))
     
-def factorize(users, movies, ratings, test_users, test_movies, test_ratings, blocks=1, latent=30, steps=10, block_steps=2, alpha=0.00001, beta=0.01, delta=0.01, rmse_repeat_count=3, debug=2, dataset=''):
+def factorize(users, movies, ratings, test_users, test_movies, test_ratings, blocks=1, latent=30, steps=10, block_steps=1, alpha=0.00001, beta=0.01, delta=0.01, rmse_repeat_count=3, debug=2, dataset=''):
     global U, V
     U, V = initUV(np.max(users)+1, latent, np.max(movies)+1)
     R = csr_matrix((ratings, (users, movies))).todense()
