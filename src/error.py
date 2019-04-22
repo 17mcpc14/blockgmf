@@ -12,7 +12,6 @@ def err(users, movies, ratings, P, Q):
         if(r > 0):
             pred = np.dot(P[u,:], Q[m,:].T)
             diff = r - pred
-            #print('Predicted :', pred, 'Actual :', r, 'diff:', diff, e, n, e*n/(n+1), diff/(n+1), diff*(diff/(n+1)) )
             e = e*n/(n+1) + diff*(diff/(n+1))
             n = n+1
 
