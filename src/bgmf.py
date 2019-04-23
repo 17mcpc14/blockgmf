@@ -78,7 +78,9 @@ def unpack(U, V, PP, QQ, users, movies, ulimits, plimits, latent):
 
 def factorize(users, movies, ratings, test_users, test_movies, test_ratings, blocks=1, latent=10, steps=10, gpu_steps=2, alpha=0.0002, beta=0.01, delta=0.01, rmse_repeat_count=3, debug=2, dataset=''):
 
-    U, V = np.ones((len(users), latent))*0.1, np.ones((len(movies), latent))*0.1
+    U, V = initUV( len(users), latent, len(movies) )
+    U = np.array(U)
+    V = np.array(V)
 
     size = max(np.max(users)+1, np.max(movies)+1)
     split = int(size/blocks)
