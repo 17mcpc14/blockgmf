@@ -10,8 +10,8 @@ blocks=int(args[3])
 steps = int(args[4])
 gpu_steps = int(args[5])
 
-train = pandas.read_csv(train_input)
-test = pandas.read_csv(test_input)
+train = pandas.read_csv(train_input).sort_values(by=['user_id','movie_id'])
+test = pandas.read_csv(test_input).sort_values(by=['user_id','movie_id'])
 users = train['user_id'].astype(int)
 movies = train['movie_id'].astype(int)
 ratings = train['rating']
