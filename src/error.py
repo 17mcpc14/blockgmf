@@ -9,10 +9,13 @@ def rmse(users, movies, ratings, P, Q):
         m = movies[idx]
         r = ratings[idx]
 
-        if(r > 0):
-            pred = np.dot(P[u,:], Q[m,:].T)
-            diff = r - pred
-            e = e*n/(n+1) + diff*(diff/(n+1))
-            n = n+1
+        try:
+            if(r > 0):
+                pred = np.dot(P[u,:], Q[m,:].T)
+                diff = r - pred
+                e = e*n/(n+1) + diff*(diff/(n+1))
+                n = n+1
+        except Exception, e:
+            print("exception during error computation..", str(e), u, m, r)
 
     return np.sqrt(e)
