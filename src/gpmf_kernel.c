@@ -16,36 +16,37 @@ __global__ void MatrixFactorization(int *u, int *v, int *r, float *p, float *q, 
    int N1 = Ny*ty;
    int N2 = Ny*(ty+1);
    
-   if(L1 >= l)
+   if(L1 > l)
    {
        return;
    }
-   if(N1 >= n)
+   if(N1 > n)
    {
        return;
    }
    
-   if(L2 >= l)
+   if(L2 > l)
    {
-       L2=l;
+       L2=l+1;
    }
-   if(N2 >= n)
+   if(N2 > n)
    {
-       N2=n;
+       N2=n+1;
    }
    
    for(int s=0; s<steps; s++)
    {
-       int rx = 0;
        for (int i=L1; i < L2; i++)
        {
-               while(u[rx]<i && rx <ul)
-               {
-                  rx++;
-               }
+
                for(int j=N1; j<N2; j++)
                {
-                    while(v[rx]<j&& rx <vl)
+                    int rx = 0;
+                    while(u[rx]!=i && rx <ul)
+                    {
+                        rx++;
+                    }
+                    while(v[rx]!=j && rx <vl)
                     {
                         rx++;
                     }
@@ -54,12 +55,12 @@ __global__ void MatrixFactorization(int *u, int *v, int *r, float *p, float *q, 
                     {
                         rating = r[rx];
                     }
-                    if(rating ==0)
+                    if(rating == 0)
                     {
                         continue;
                     }
+
                     float Pvalue = 0.0;
-               
                     for (int k = 0; k < m; k++) {
                         float Aelement = p[i*m +k];
                         float Belement = q[ j +k*n];
@@ -67,23 +68,25 @@ __global__ void MatrixFactorization(int *u, int *v, int *r, float *p, float *q, 
                     }
 
                     float eij = rating - Pvalue;
-
-                    for(int k=0; k<m; k++)
-                    { 
-                        if(isfinite(p[i*m +k] + alpha * (2* eij * q[j +k*n] - beta * p[i*m +k])))
+                    if(isfinite(eij)){
+                        for(int k=0; k<m; k++)
                         {
-                            atomicAdd(&p[i*m +k] , alpha * ( 2 * eij * q[j +k*n] - beta * p[i*m +k]));
-                        }
-                        if(isfinite(q[j +k*n] + alpha * (2 * eij * p[i*m +k] - beta * q[j +k*n])))
-                        {
-                            atomicAdd(&q[j +k*n] , alpha * ( 2 * eij * p[i*m +k] - beta * q[j +k*n]));
-                        }
+                            if(isfinite(p[i*m +k] + alpha * (2* eij * q[j +k*n] - beta * p[i*m +k])))
+                            {
+                                atomicAdd(&p[i*m +k] , alpha * ( 2 * eij * q[j +k*n] - beta * p[i*m +k]));
+                            }
+                            if(isfinite(q[j +k*n] + alpha * (2 * eij * p[i*m +k] - beta * q[j +k*n])))
+                            {
+                                atomicAdd(&q[j +k*n] , alpha * ( 2 * eij * p[i*m +k] - beta * q[j +k*n]));
+                            }
+                       }
                     }
                }
        }
-   
+
    } // steps
-   
+
+}
 }    
 
                              
