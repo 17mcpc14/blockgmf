@@ -23,6 +23,6 @@ def matrix_factorization(users, movies, ratings, test_users, test_movies, test_r
                     P[i,k] = P[i,k] + alpha * (2 * eij * Q[j,k] - beta * P[i,k])
                     Q[j,k] = Q[j,k] + alpha * (2 * eij * P[i,k] - beta * Q[j,k])
         
-        print("Time till now :", round(time.clock()-t0,2), "Train error", rmse(users, movies, ratings, P,Q), "Test error", rmse(test_users, test_movies, test_ratings, P,Q) )
+        print("Time till now :", round(time.clock()-t0,2), "Train error", round(rmse(users, movies, ratings, P,Q), 4) , "Test error", round(rmse(test_users, test_movies, test_ratings, P,Q),4) )
 
     return P, Q
