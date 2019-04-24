@@ -7,25 +7,22 @@ from pycuda import driver, compiler, gpuarray, tools
 import pycuda.autoinit
 
 kernel_code = open('gpmf_kernel.c', 'r').read()
-
-def factorize(users, movies, ratings, test_users, test_movies, test_ratings, blocks=1, latent=30, steps=10, gpu_steps=2, alpha=0.0002, beta=0.02, delta=0.01, rmse_repeat_count=5, debug=1, dataset=''):
+mod = compiler.SourceModule(kernel_code)
+matrixfact = mod.get_function("MatrixFactorization")
+    
+def factorize(users, movies, ratings, test_users, test_movies, test_ratings, latent=30, steps=10, alpha=0.0002, beta=0.02, delta=0.01, rmse_repeat_count=5, debug=1, dataset=''):
 
     U, V = initUV(int(np.max(users)+1), latent, int(np.max(movies)+1))
     U, V = np.array(U).astype(np.float32), np.array(V).astype(np.float32).transpose()
 
     print("Shape of P,Q : " , U.shape, V.shape)
 
-    size = max(np.max(users), np.max(movies))
-    split = int(size/blocks)
-
-    mod = compiler.SourceModule(kernel_code)
-    matrixfact = mod.get_function("MatrixFactorization")
     start_time=time.clock()
     y1, y2 = [], []
-    error, count = 100, 0
-
-    test_rmse = rmse(test_users, test_movies, test_ratings, U, V.T)
-    print("Initial test error :", round(test_rmse,4))
+    
+    error, count = rmse(test_users, test_movies, test_ratings, U, V.T), 0
+    print("Initial test error :", round(error,4))
+    
     for k in range(steps):
 
         if debug>1:
