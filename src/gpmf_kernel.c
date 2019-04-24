@@ -87,6 +87,3 @@ __global__ void MatrixFactorization(int *u, int *v, int *r, float *p, float *q, 
    } // steps
 
 }
-}    
-
-                             
