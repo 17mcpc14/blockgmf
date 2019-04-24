@@ -87,5 +87,5 @@ def factorize(users, movies, ratings, test_users, test_movies, test_ratings, lat
             error=step_error
 
     if debug>1:
-        np.savetxt('gpmf-'+str(blocks)+'-'+str(start_time)+'-y1.txt', y1, fmt='%.4f')
-        np.savetxt('gpmf-'+str(blocks)+'-'+str(start_time)+'-y2.txt', y2, fmt='%.4f')
+        np.savetxt('gpmf-'+str(start_time)+'-y1.txt', y1, fmt='%.4f')
+        np.savetxt('gpmf-'+str(start_time)+'-y2.txt', y2, fmt='%.4f')
