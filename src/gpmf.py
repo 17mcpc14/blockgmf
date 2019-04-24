@@ -10,7 +10,7 @@ kernel_code = open('gpmf_kernel.c', 'r').read()
 mod = compiler.SourceModule(kernel_code)
 matrixfact = mod.get_function("MatrixFactorization")
     
-def factorize(users, movies, ratings, test_users, test_movies, test_ratings, latent=30, steps=10, alpha=0.0002, beta=0.02, delta=0.01, rmse_repeat_count=5, debug=1, dataset=''):
+def factorize(users, movies, ratings, test_users, test_movies, test_ratings, latent=30, steps=10, gpu_steps=1, alpha=0.0002, beta=0.02, delta=0.01, rmse_repeat_count=5, debug=1, dataset=''):
 
     U, V = initUV(int(np.max(users)+1), latent, int(np.max(movies)+1))
     U, V = np.array(U).astype(np.float32), np.array(V).astype(np.float32).transpose()
