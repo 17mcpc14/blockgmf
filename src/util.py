@@ -26,7 +26,7 @@ def initUV(L,M,N):
         ad[i,:] = a
 
     bd = f.create_carray(f.root, 'b', tb.Float64Atom(), (N, M), filters=filters)
-    for i in range(M):
+    for i in range(N):
         bd[i,:] = a
 
     return ad , bd
