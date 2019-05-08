@@ -1,7 +1,7 @@
 #include <cstdio>
 #include <stdlib.h>
 
-__global__ void MatrixFactorization(int *u, int *v, int *r, float *p, float *q, int m, int *ulimits, int *plimits, int steps, float alpha, float beta, float delta)
+__global__ void MatrixFactorization(int *u, int *v, int *r, float *p, float *q, int m, int *ulimits, int umin, int vmin, int steps, float alpha, float beta, float delta)
 {
 
    int L1 = (blockDim.x*blockIdx.x)*(blockIdx.y*blockDim.y)+(blockDim.x*threadIdx.x)+threadIdx.y;//Lx*tx;
@@ -9,30 +9,30 @@ __global__ void MatrixFactorization(int *u, int *v, int *r, float *p, float *q, 
 
    for(int s=0; s<steps; s++)
    {
-       int c = 0;
-       for (int i=ulimits[L1]; i < ulimits[L2]; i++)
+       int i1 = ulimits[L1], i2 = ulimits[L2] ;
+       for (int i=i1; i < i2; i++)
        {
-             int j = plimits[L1] + c;
+             int pidx = u[i]-umin;
+             int qidx = v[i]-vmin;
 
              float eij = 0.0;
              for(int k=0; k<m; k++)
              {
-                  eij += (p[j+k]*q[j+k]);
+                  eij += (p[pidx*m+k]*q[qidx*m+k]);
              }
              eij = r[i] - eij;
 
              for(int k=0; k<m; k++)
              {
-                   if(isfinite(p[j+k] + alpha * (2 * eij * q[j+k] - beta * p[j+k])))
+                   if(isfinite(p[pidx*m+k] + alpha * (2 * eij * q[qidx*m+k] - beta * p[pidx*m+k])))
                    {
-                        p[j +k] = p[j+k] + alpha * (2 * eij * q[j+k] - beta * p[j+k]);
+                        atomicAdd(&p[pidx*m+k] , alpha * (2 * eij * q[qidx*m+k] - beta * p[pidx*m+k]));
                    }
-                   if(isfinite(q[j+k] + alpha * (2 * eij * p[j+k] - beta * q[j+k])))
+                   if(isfinite(q[qidx*m+k] + alpha * (2 * eij * p[pidx*m+k] - beta * q[qidx*m+k])))
                    {
-                        q[j+k] = q[j+k] + alpha * (2 * eij * p[j+k] - beta * q[j+k]);
+                        atomicAdd(&q[qidx*m+k] , alpha * (2 * eij * p[pidx*m+k] - beta * q[qidx*m+k]));
                    }
              }
-             c++;
         }
     } //steps
 }
