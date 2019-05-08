@@ -30,7 +30,7 @@ def factorize(users, movies, ratings, test_users, test_movies, test_ratings, lat
 
         t6 = time.clock()
 
-        uu, mm, rr = np.array(users).astype(int), np.array(movies).astype(int), np.array(ratings).astype(int)
+        uu, mm, rr = np.array(users).astype(np.int32), np.array(movies).astype(np.int32), np.array(ratings).astype(np.int32)
 
         t7 = time.clock()
         tools.clear_context_caches()
