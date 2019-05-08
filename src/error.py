@@ -15,7 +15,7 @@ def rmse(users, movies, ratings, P, Q):
                 diff = r - pred
                 e = e*n/(n+1) + diff*(diff/(n+1))
                 n = n+1
-        except Exception, e:
-            print("exception during error computation..", str(e), u, m, r)
+        except Exception, err:
+            print("exception during error computation..", str(err))
 
     return np.sqrt(e)
