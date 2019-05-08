@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.sparse import dok_matrix, csr_matrix, coo_matrix
 import time
 import math
 from error import rmse
@@ -10,28 +11,27 @@ kernel_code = open('bgmf_kernel.c', 'r').read()
 mod = compiler.SourceModule(kernel_code)
 matrixfact = mod.get_function("MatrixFactorization")
 
-def matrix_factorization(UU,MM,RR, P, Q, ulimits, plimits, latent=30, gpu_steps=1, alpha=0.0002, beta=0.01, delta=0.01, debug=2):
+def matrix_factorization(UU,MM,RR, U, V, ulimits, umin, mmin, latent=30, gpu_steps=1, alpha=0.0002, beta=0.01, delta=0.01, debug=2):
 
     u_gpu = gpuarray.to_gpu(np.array(UU).astype(np.int32))
     v_gpu = gpuarray.to_gpu(np.array(MM).astype(np.int32))
     r_gpu = gpuarray.to_gpu(np.array(RR).astype(np.int32))
 
-    a_gpu = gpuarray.to_gpu(np.array(P).astype(np.float32))
-    b_gpu = gpuarray.to_gpu(np.array(Q).astype(np.float32))
+    a_gpu = gpuarray.to_gpu(np.array(U).astype(np.float32))
+    b_gpu = gpuarray.to_gpu(np.array(V).astype(np.float32))
 
     ul_gpu = gpuarray.to_gpu(np.array(ulimits).astype(np.int32))
-    pl_gpu = gpuarray.to_gpu(np.array(plimits).astype(np.int32))
 
     t7 = time.clock()
 
     if debug>1:
-        print("Length of uu,mm ", len(UU), len(MM), len(P), len(Q) )
+        print("Length of uu,mm ", len(UU), len(MM), len(U), len(V) )
 
     matrixfact(
         u_gpu, v_gpu, r_gpu, a_gpu, b_gpu,
-        np.int32(latent), ul_gpu, pl_gpu, np.int32(gpu_steps),
+        np.int32(latent), ul_gpu, np.int32(umin), np.int32(mmin), np.int32(gpu_steps),
         np.float32(alpha), np.float32(beta), np.float32(delta),
-        block=(2,2,1),grid=(1,1)
+        block=(16,16,1),grid=(3,2)
     )
 
     P = a_gpu.get()
@@ -43,42 +43,19 @@ def matrix_factorization(UU,MM,RR, P, Q, ulimits, plimits, latent=30, gpu_steps=
 
     return P, Q
 
-def pack(UU, MM, RR, PP, QQ, uu, mm, rr, P, Q, ulimits, plimits):
+def pack(UU, MM, RR, uu, mm, rr, ulimits):
 
     ulimits.append(len(uu))
-    plimits.append(P.shape[1]*P.shape[2])
 
     UU.extend(uu)
     MM.extend(mm)
     RR.extend(rr)
-    PP.extend(P.flatten())
-    QQ.extend(Q.flatten())
 
-    return UU, MM, RR, PP, QQ, ulimits, plimits
-
-def unpack(U, V, PP, QQ, users, movies, ulimits, plimits, latent):
-
-    for i in range(len(ulimits)-1):
-        u1 = ulimits[i]
-        u2 = ulimits[i+1]
-        uu = users[u1:u2]
-        P = PP[plimits[i]:plimits[i+1]]
-        P = P.reshape( (len(uu), latent) )
-        U[u1:u2,:]=P
-
-    for i in range(len(ulimits)-1):
-        v1 = ulimits[i]
-        v2 = ulimits[i+1]
-        mm = movies[v1:v2]
-        Q = QQ[plimits[i]:plimits[i+1]]
-        Q = Q.reshape( (len(mm), latent) )
-        V[v1:v2,:]=Q
-
-    return U, V
+    return UU, MM, RR, ulimits
 
 def factorize(users, movies, ratings, test_users, test_movies, test_ratings, blocks=1, latent=10, steps=10, gpu_steps=2, alpha=0.0002, beta=0.01, delta=0.01, rmse_repeat_count=3, debug=2, dataset=''):
 
-    U, V = initUV( len(users), latent, len(movies) )
+    U, V = initUV( np.max(users)-np.min(users)+1, latent, np.max(movies)-np.min(movies)+1)
     U = np.array(U)
     V = np.array(V)
 
@@ -112,10 +89,9 @@ def factorize(users, movies, ratings, test_users, test_movies, test_ratings, blo
                 u2 = int(np.max(users))
 
             stemp = 0
-            UU, MM, RR, PP, QQ = [], [], [], [], []
+            UU, MM, RR = [], [], []
             ulimits = [0]
-            plimits = [0]
-
+           
             for j in range(vs):
                 xtemp = int((i+stemp)%us)
 
@@ -140,14 +116,12 @@ def factorize(users, movies, ratings, test_users, test_movies, test_ratings, blo
                 print("Processing split : " , i , j, u1, u2, v1, v2)
 
                 uu, mm, rr = fetch(u1,u2, v1,v2, users,movies,ratings)
-                P, Q = U[[uu],:], V[[mm],:]
 
                 if(len(uu)!=0 and len(mm)!=0):
-                    UU,MM,RR, PP,QQ, ulimits,plimits = pack(UU,MM,RR, PP,QQ, uu,mm,rr, P,Q, ulimits,plimits)
+                    UU,MM,RR, ulimits = pack(UU,MM,RR, uu,mm,rr, ulimits)
 
                 stemp+=1
-            PP,QQ = matrix_factorization(UU,MM,RR, PP,QQ, ulimits,plimits)
-            U, V = unpack(U,V, PP,QQ, users,movies, ulimits,plimits, latent)
+            U, V = matrix_factorization(UU,MM,RR, U,V, ulimits,np.min(users), np.min(movies))
 
         t5 = time.clock()
         if debug>1:
@@ -173,5 +147,5 @@ def factorize(users, movies, ratings, test_users, test_movies, test_ratings, blo
             count = 0
         error=step_error
 
-    np.savetxt(str(blocks*blocks)+'blocks_'+str(gpu_steps)+'iterations_y2.txt', y2, fmt='%.3f')
-    np.savetxt(str(blocks*blocks)+'blocks_'+str(gpu_steps)+'iterations_y1.txt', y1, fmt='%.3f')
+    np.savetxt('blocks_'+str(gpu_steps)+'iterations_y2.txt', y2, fmt='%.3f')
+    np.savetxt('blocks_'+str(gpu_steps)+'iterations_y1.txt', y1, fmt='%.3f')
