@@ -12,11 +12,11 @@ gpu_steps = int(args[5])
 
 train = pandas.read_csv(train_input).sort_values(by=['user_id','movie_id'])
 test = pandas.read_csv(test_input).sort_values(by=['user_id','movie_id'])
-users = train['user_id'].astype(int)
-movies = train['movie_id'].astype(int)
+users = train['user_id'].astype(np.int32)
+movies = train['movie_id'].astype(np.int32)
 ratings = train['rating']
-test_users = test['user_id'].astype(int)
-test_movies = test['movie_id'].astype(int)
+test_users = test['user_id'].astype(np.int32)
+test_movies = test['movie_id'].astype(np.int32)
 test_ratings = test['rating']
 
 factorize(users, movies, ratings, test_users, test_movies, test_ratings,blocks=blocks, latent=30, steps=steps, gpu_steps=gpu_steps, debug=2)
