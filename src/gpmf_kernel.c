@@ -25,11 +25,11 @@ __global__ void MatrixFactorization(int *u, int *v, int *r, float *p, float *q, 
        return;
    }
    
-   if(L2 > l)
+   if(L2 >= l)
    {
        L2=l+1;
    }
-   if(N2 > n)
+   if(N2 >= n)
    {
        N2=n+1;
    }
@@ -42,11 +42,11 @@ __global__ void MatrixFactorization(int *u, int *v, int *r, float *p, float *q, 
                for(int j=N1; j<N2; j++)
                {
                     int rx = 0;
-                    while(u[rx]!=i && rx <ul)
+                    while(u[rx] <i && rx <ul)
                     {
                         rx++;
                     }
-                    while(v[rx]!=j && rx <vl)
+                    while(v[rx] <j && rx <vl)
                     {
                         rx++;
                     }
