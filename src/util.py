@@ -21,7 +21,7 @@ def initUV(L,M,N):
 
     filters = tb.Filters(complevel=5, complib='blosc')
     ad = f.create_carray(f.root, 'a', tb.Float64Atom(), (L,M), filters=filters)
-    a = np.ones(M)*0.1
+    a =  np.random.normal(0, .1, (M))*0.1
     for i in range(L):
         ad[i,:] = a
 
